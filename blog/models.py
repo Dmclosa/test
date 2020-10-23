@@ -38,6 +38,9 @@ class Post(models.Model):
 									options={'quality': 60
 									})
 
+	test_field = models.TextField(default='',
+									blank=True)
+
 
 	def __str__(self):
 		return self.title
