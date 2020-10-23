@@ -169,5 +169,5 @@ if ENV == 'production':
         AWS_STORAGE_BUCKET_NAME, AWS_LOCATION)
 
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    DEFAULT_FILE_STORAGE = 'Django-1.storages.MediaStorage'
+    DEFAULT_FILE_STORAGE = 'mysite.storages.MediaStorage'
 
