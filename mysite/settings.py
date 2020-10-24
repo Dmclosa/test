@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
-
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,12 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = '!_9a#8q(g6#4^%zfjw1)haw6c^h*cpim=b_gmkw$)9b0u)^xo6'
-SECRET_KEY = 'SECRET_KEY'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = config('DEBUG',
+                default=False,
+                cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',
+                        cast=lamba v: 
+                        [s.strip() for s in v.split(',')])
 
 
 # Application definition
@@ -145,30 +150,19 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-ENV = os.environ.get('ENV')
+ENV = os.environ.get('ENV', default='production')
 
 if ENV == 'production':
-    ALLOWED_HOSTS = ['.herokuapp.com']
-    SECRET_KEY = os.environ.get('SECRET_KEY')
-    DEBUG = int(os.environ.get('DEBUG'))
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_pycopg2',
+            'NAME': config('DB_NAME', default=''),
+            'USER': config('DB_USER', default=''),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
 
 
-    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = 'davemath'
-    AWS_DEFAULT_ACL = None
-    
-    AWS_LOCATION = 'static'
-    AWS_MEDIA_LOCATION = 'media'
-
-
-    AWS_S3_CUSTOM_DOMAIN = 'dzjjt3fwn8yc7.cloudfront.net'
-
-    STATIC_URL = 'https://%s.s3.amazonaws.com/%s/' % (
-        AWS_STORAGE_BUCKET_NAME, AWS_LOCATION)
-
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    DEFAULT_FILE_STORAGE = 'mysite.storages.MediaStorage'
 
